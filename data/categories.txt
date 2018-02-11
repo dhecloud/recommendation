@@ -1,0 +1,6 @@
+World|0
+Sports|1
+Entertainment|2
+Health|3
+Technology|4
+Science|5
