@@ -17,10 +17,10 @@ def get_cur_news_cat(path):
 
 
 #primitive algo, will not scale well for huge txt files
-def update_cur_news_matrix(path, userid, itemid, rating):
+def update_cur_news_matrix(path, userid, itemid):
     assert type(userid) is int 
     assert type(itemid) is int 
-    assert type(rating) is int 
+    
     found = 0
     i = 0
     with open(path, "r") as matfile:
@@ -39,6 +39,10 @@ def update_cur_news_matrix(path, userid, itemid, rating):
         
     matfile.close()
     matfile = open(path, "r+")
+    if int(currating) == 5:
+        rating = int(currating)
+    else:
+        rating = int(currating) + 1
     lines = matfile.readlines()
     lines[i] = str(userid) + "\t" + str(itemid) + "\t" + str(rating) + "\t" + str(int(time.time())) 
     if i != len(lines) - 1:
@@ -49,13 +53,12 @@ def update_cur_news_matrix(path, userid, itemid, rating):
     print("updated ratings!")
     
     
-def update_new_newsmatrix(path, userid, itemid, rating):
+def update_new_newsmatrix(path, userid, itemid):
     assert type(userid) is int 
     assert type(itemid) is int 
-    assert type(rating) is int 
     
     with open(path, "a") as matfile:
-        newline = "\n" + str(userid) + "\t" + str(itemid) + "\t" + str(rating) + "\t" + str(int(time.time()))
+        newline = "\n" + str(userid) + "\t" + str(itemid) + "\t" + str(0) + "\t" + str(int(time.time()))
         matfile.write(newline)
     matfile.close()
     print("matfile updated!")
@@ -80,18 +83,35 @@ def delete_cur_cat(cat, path):
     print("deleted categories!")
 
 if __name__ == "__main__":
-    delete_cur_cat("World", CATPATH)
     '''
-    inputcat = sys.argv[1]
-    #get current categories
-    cat_labels = get_cur_news_cat(CATPATH)
-    #if cat in list: do nothing
-    if inputcat in cat_labels:
-        pass
+    Usage: python update.py <mode> <input category> <user id>
+    eg: python update.py 1 World 3
+    Modes: 
+    1 - update ratings for a user id
+    2 - delete ratings for a user id 
+    '''
+    mode = sys.argv[1]
+    inputcat = sys.argv[2]
+    userid = sys.argv[3]
+    if int(mode) == 1:    
+        #get current categories
+        cat_labels = list(get_cur_news_cat(CATPATH))
+        print(cat_labels)
+        #if cat in list, just update/add rating
+        if inputcat in cat_labels:
+            #get item id of cat
+            iid = cat_labels.index(inputcat)
+            #update the current rating already in the matrix
+            status = update_cur_news_matrix(MATRIXPATH, int(userid), int(iid))
+            if status == 0:
+                update_new_newsmatrix(MATRIXPATH, int(userid), iid)                
+        else:
+            #add new category category.txt
+            update_new_cat(inputcat, CATPATH, len(cat_labels))
+            cat_labels += [inputcat]
+            update_new_newsmatrix(MATRIXPATH, int(userid), len(cat_labels)-1)
+            print("matrix updated!")
+    elif int(mode) == 2:
+         delete_cur_cat(inputcat, CATPATH)
     else:
-        #update category.txt
-        update_new_cat(inputcat, CATPATH, len(cat_labels))
-        cat_labels += [inputcat]
-    #update newsmatrix
-    update_new_newsmatrix(MATRIXPATH, 4, 2, 3)
-    '''
+        print("you have entered an invalid mode")

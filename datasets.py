@@ -51,7 +51,7 @@ def _build_matrix(rows, cols, data):
     #set missing ratings to 1 (minimum rating is 1)
     matrix[matrix==0] = 1.0
     matrix = preprocessing.normalize(matrix)
-    print("normalized!")
+    #print("normalized!")
     return matrix.tocoo()
 
 def read_raw_data(path):
@@ -68,7 +68,7 @@ def fetch_news_data():
     train_raw = read_raw_data("data/newsmatrix.txt")
 
     train = _build_matrix(num_users, num_items, _parse_data(train_raw))
-    print(train)
+
     categories_feature_labels = _parse_news_category(categories_raw)
 
     data = {'train': train,
