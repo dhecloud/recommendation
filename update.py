@@ -1,3 +1,11 @@
+'''
+Usage: python update.py <mode> <input category> <user id>
+eg: python update.py 1 World 3
+Modes: 
+1 - update ratings for a user id
+2 - delete ratings for a user id 
+'''
+
 from datasets import _parse_news_category, read_raw_data
 import sys
 import numpy as np
@@ -83,13 +91,7 @@ def delete_cur_cat(cat, path):
     print("deleted categories!")
 
 if __name__ == "__main__":
-    '''
-    Usage: python update.py <mode> <input category> <user id>
-    eg: python update.py 1 World 3
-    Modes: 
-    1 - update ratings for a user id
-    2 - delete ratings for a user id 
-    '''
+
     mode = sys.argv[1]
     inputcat = sys.argv[2]
     userid = sys.argv[3]
